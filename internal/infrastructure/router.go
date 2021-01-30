@@ -3,7 +3,8 @@ package infrastructure
 import (
 	"database/sql"
 	"muramasa/internal/core"
-	"muramasa/internal/modules/product/controller"
+	productController "muramasa/internal/modules/product/controller"
+	stockController "muramasa/internal/modules/stock/controller"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -29,12 +30,20 @@ func (rh RouterHandler) SetRoutes(r *gin.Engine) {
 	})
 
 	rh.productAPI(api)
+	rh.stockAPI(api)
 }
 
 func (rh RouterHandler) productAPI(api *gin.RouterGroup) {
-	getProductController := controller.NewGetAllProductsController(rh.DB)
-	addProduct := controller.NewAddProductController(rh.DB)
+	getProductController := productController.NewGetAllProductsController(rh.DB)
+	addProductController := productController.NewAddProductController(rh.DB)
 	product := api.Group("/product")
 	product.GET("/", getProductController.GetAllProducts)
-	product.POST("/", addProduct.AddProduct)
+	product.POST("/", addProductController.AddProduct)
+}
+
+func (rh RouterHandler) stockAPI(api *gin.RouterGroup) {
+	getProductStockByProductIDController := stockController.NewGetProductStockByProductIdController(rh.DB)
+	stock := api.Group("/stock")
+
+	stock.GET("/:id", getProductStockByProductIDController.GetProductStockByProductId)
 }

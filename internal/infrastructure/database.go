@@ -13,7 +13,7 @@ type Database struct {
 
 func NewDatabaseConnection() Database {
 	databaseInfo := fmt.Sprintf(
-		"%s:%s@tcp(%s:%d)/%s",
+		"%s:%s@tcp(%s:%d)/%s?parseTime=true",
 		viper.GetString("DB_USERNAME"),
 		viper.GetString("DB_PASSWORD"),
 		viper.GetString("DB_HOST"),

@@ -9,8 +9,8 @@ type ProductRepository struct {
 	db *sql.DB
 }
 
-func NewProductRepository(db *sql.DB) ProductRepository {
-	return ProductRepository{db: db}
+func NewProductRepository(db *sql.DB) *ProductRepository {
+	return &ProductRepository{db: db}
 }
 
 func (p ProductRepository) GetAllProduct() ([]*entity.Product, error) {

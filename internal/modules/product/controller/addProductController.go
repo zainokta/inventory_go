@@ -25,25 +25,34 @@ func (g *AddProductController) AddProduct(c *gin.Context) {
 
 	err := c.Bind(product)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "error",
+			"data":    err.Error(),
+		})
 		return
 	}
-	
+
 	err = entity.CreateProduct(product)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "error",
+			"data":    err.Error(),
+		})
 		return
 	}
 
 	id, err := addProductUseCase.Execute(product)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "error",
+			"data":    err.Error(),
+		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Product has been added.",
+		"message": "success",
 		"data":    id,
 	})
 }

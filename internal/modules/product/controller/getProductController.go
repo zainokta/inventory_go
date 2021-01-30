@@ -30,7 +30,7 @@ func (g *GetAllProductsController) GetAllProducts(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Get all products.",
+		"message": "success",
 		"data":    products,
 	})
 }

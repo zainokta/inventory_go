@@ -1,4 +1,4 @@
-package stock
+package entity
 
 import (
 	inbound "muramasa/internal/modules/inbound/entity"
@@ -8,14 +8,15 @@ import (
 
 type Stock struct {
 	ID         int64           `json:"id"`
-	ProductID  int64           `json:"product_id"`
+	ProductID  int64           `json:"product_id" binding:"required"`
+	Stock      int             `json:"stock" binding:"required"`
+	ExpiryDate *time.Time      `json:"expiry_date" binding:"required"`
+	InboundID  int64           `json:"inbound_id" binding:"required"`
 	Product    product.Product `json:"product"`
-	Stock      int             `json:"stock"`
-	ExpiryDate *time.Time      `json:"expiry_date"`
-	InboundID  int64           `json:"inbound_id"`
 	Inbound    inbound.Inbound `json:"inbound"`
 }
 
 type IStockRepository interface {
-	AddStock(Stock) int
+	GetProductStockByProductId(int) (*Stock, error)
+	AddStock(Stock) (int, error)
 }
