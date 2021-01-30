@@ -13,7 +13,7 @@ func NewStockRepository(db *sql.DB) *StockRepository {
 	return &StockRepository{db: db}
 }
 
-func (s *StockRepository) GetProductStockByProductId(id int) (*entity.Stock, error) {
+func (s *StockRepository) GetProductStockByProductId(id int) ([]*entity.Stock, error) {
 	rows, err := s.db.Query(`
 		SELECT stocks.*, products.*, inbounds.* 
 		FROM stocks
@@ -27,10 +27,11 @@ func (s *StockRepository) GetProductStockByProductId(id int) (*entity.Stock, err
 
 	defer rows.Close()
 
-	stock := &entity.Stock{}
+	var stocks []*entity.Stock
 	hasResult := false
 	for rows.Next() {
 		hasResult = true
+		stock := &entity.Stock{}
 		err := rows.Scan(
 			&stock.ID,
 			&stock.ProductID,
@@ -51,13 +52,14 @@ func (s *StockRepository) GetProductStockByProductId(id int) (*entity.Stock, err
 		if err != nil {
 			return nil, err
 		}
+		stocks = append(stocks, stock)
 	}
 
 	if !hasResult {
 		return nil, nil
 	}
 
-	return stock, nil
+	return stocks, nil
 }
 
 func (s *StockRepository) AddStock(entity.Stock) (int, error) {

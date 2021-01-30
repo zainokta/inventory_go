@@ -17,6 +17,6 @@ type Stock struct {
 }
 
 type IStockRepository interface {
-	GetProductStockByProductId(int) (*Stock, error)
+	GetProductStockByProductId(int) ([]*Stock, error)
 	AddStock(Stock) (int, error)
 }

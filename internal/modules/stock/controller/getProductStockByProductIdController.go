@@ -2,6 +2,7 @@ package controller
 
 import (
 	"database/sql"
+	"fmt"
 	"muramasa/internal/modules/stock/repository"
 	"muramasa/internal/modules/stock/usecase"
 	"net/http"
@@ -36,6 +37,14 @@ func (g *GetProductStockByProductIdController) GetProductStockByProductId(c *gin
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "error",
 			"data":    err.Error(),
+		})
+		return
+	}
+
+	if productStock == nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "error",
+			"data":    fmt.Sprintf("Product stocks with product id %d not found.", id),
 		})
 		return
 	}
