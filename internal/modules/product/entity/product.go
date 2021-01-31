@@ -15,6 +15,7 @@ type Product struct {
 type IProductRepository interface {
 	GetAllProduct() ([]*Product, error)
 	AddProduct(*Product) (int, error)
+	FindProductByID(int) (*Product, error)
 }
 
 func CreateProduct(product *Product) error {

@@ -43,7 +43,9 @@ func (rh RouterHandler) productAPI(api *gin.RouterGroup) {
 
 func (rh RouterHandler) stockAPI(api *gin.RouterGroup) {
 	getProductStockByProductIDController := stockController.NewGetProductStockByProductIdController(rh.DB)
+	addStockController := stockController.NewAddStockController(rh.DB)
 	stock := api.Group("/stock")
 
+	stock.POST("/", addStockController.AddStock)
 	stock.GET("/:id", getProductStockByProductIDController.GetProductStockByProductId)
 }

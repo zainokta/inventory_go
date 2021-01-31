@@ -1,15 +1,22 @@
 package usecase
 
-import "muramasa/internal/modules/inbound/entity"
+import (
+	"muramasa/internal/modules/inbound/entity"
+)
 
-type AddInbound struct {
+type AddInboundUseCase struct {
 	inboundRepository entity.IInboundRepository
 }
 
-func NewAddInbound(inboundRepository entity.IInboundRepository) AddInbound {
-	return AddInbound{inboundRepository: inboundRepository}
+func NewAddInboundUseCase(inboundRepository entity.IInboundRepository) *AddInboundUseCase {
+	return &AddInboundUseCase{inboundRepository: inboundRepository}
 }
 
-func (a AddInbound) Execute(e entity.Inbound) {
-	a.inboundRepository.AddInbound(e)
+func (a *AddInboundUseCase) Execute(inbound *entity.Inbound) (int, error) {
+	id, err := a.inboundRepository.AddInbound(inbound)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }

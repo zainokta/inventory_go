@@ -35,6 +35,32 @@ func (p ProductRepository) GetAllProduct() ([]*entity.Product, error) {
 	return result, nil
 }
 
+func (p ProductRepository) FindProductByID(id int) (*entity.Product, error) {
+	rows, err := p.db.Query("SELECT * FROM products WHERE id = ?", id)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	product := &entity.Product{}
+	hasResult := false
+	for rows.Next() {
+		hasResult = true
+		err := rows.Scan(&product.ID, &product.Name, &product.Sku, &product.Expirable)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if !hasResult {
+		return nil, nil
+	}
+
+	return product, nil
+
+}
+
 func (p ProductRepository) AddProduct(product *entity.Product) (int, error) {
 	stmt, err := p.db.Prepare("INSERT INTO products(name,sku,expireable) VALUES(?,?,?)")
 	if err != nil {

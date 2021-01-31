@@ -62,6 +62,21 @@ func (s *StockRepository) GetProductStockByProductId(id int) ([]*entity.Stock, e
 	return stocks, nil
 }
 
-func (s *StockRepository) AddStock(entity.Stock) (int, error) {
-	return 0, nil
+func (s *StockRepository) AddStock(stock *entity.Stock) (int, error) {
+	stmt, err := s.db.Prepare("INSERT INTO stocks(product_id, stock, expiry_date, inbound_id) VALUES(?, ?, ?, ?)")
+	if err != nil {
+		return 0, err
+	}
+
+	result, err := stmt.Exec(&stock.ProductID, &stock.Stock, &stock.ExpiryDate, &stock.InboundID)
+	if err != nil {
+		return 0, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(id), nil
 }
