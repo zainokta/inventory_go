@@ -3,6 +3,7 @@ package infrastructure
 import (
 	"database/sql"
 	"muramasa/internal/core"
+	orderController "muramasa/internal/modules/order/controller"
 	productController "muramasa/internal/modules/product/controller"
 	stockController "muramasa/internal/modules/stock/controller"
 
@@ -41,25 +42,25 @@ func (rh RouterHandler) SetRoutes(r *gin.Engine) {
 func (rh RouterHandler) productAPI(api *gin.RouterGroup) {
 	product := api.Group("/product")
 
-	productController := productController.NewProductController(rh.Repositories.productRepository)
+	productControllerInstance := productController.NewProductController(rh.Repositories.productRepository)
 
-	product.GET("/", productController.GetAllProducts)
-	product.POST("/", productController.AddProduct)
+	product.GET("/", productControllerInstance.GetAllProducts)
+	product.POST("/", productControllerInstance.AddProduct)
 }
 
 func (rh RouterHandler) stockAPI(api *gin.RouterGroup) {
 	stock := api.Group("/stock")
 
-	stockController := stockController.NewStockController(rh.Repositories.productRepository, rh.Repositories.inboundRepository, rh.Repositories.stockRepository)
+	stockControllerIInstance := stockController.NewStockController(rh.Repositories.productRepository, rh.Repositories.inboundRepository, rh.Repositories.stockRepository)
 
-	stock.POST("/", stockController.AddStock)
-	stock.GET("/:id", stockController.GetProductStockByProductId)
+	stock.POST("/", stockControllerIInstance.AddStock)
+	stock.GET("/:id", stockControllerIInstance.GetProductStockByProductId)
 }
 
 func (rh RouterHandler) orderAPI(api *gin.RouterGroup) {
 	order := api.Group("/order")
 
-	order.POST("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, "order")
-	})
+	orderControllerInstance := orderController.NewOrderController(rh.Repositories.outboundRepository, rh.Repositories.stockRepository, rh.Repositories.productRepository)
+
+	order.POST("/", orderControllerInstance.AddOrder)
 }

@@ -106,26 +106,31 @@ func (s *StockRepository) GetProductTotalStock(productID int) (int, error) {
 	return totalStock, nil
 }
 
-func (s *StockRepository) GetLatestProductStock(productID int) (int, error) {
+func (s *StockRepository) GetLatestProductStock(productID int) (*entity.Stock, error) {
 	rows, err := s.db.Query(`SELECT stocks.* FROM stocks
 							JOIN inbounds ON inbounds.id = stocks.inbound_id
+							WHERE stocks.product_id = ?
+							AND stocks.stock != 0
 							ORDER BY COALESCE(stocks.expiry_date, inbounds.inbound_date)
-							LIMIT 1 = ?`, productID)
+							LIMIT 1`, productID)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	defer rows.Close()
 
-	var stock int
+	stock := &entity.Stock{}
 	hasResult := false
 	for rows.Next() {
 		hasResult = true
-		err = rows.Scan(&stock)
+		err = rows.Scan(&stock.ID, &stock.ProductID, &stock.Stock, &stock.ExpiryDate, &stock.InboundID)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if !hasResult {
-		return 0, nil
+		return nil, nil
 	}
 
 	return stock, nil
@@ -137,7 +142,7 @@ func (s *StockRepository) UpdateProductStock(stockID int, currentStock int) erro
 		return err
 	}
 
-	_, err = stmt.Exec(stockID)
+	_, err = stmt.Exec(currentStock, stockID)
 	if err != nil {
 		return err
 	}

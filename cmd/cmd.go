@@ -14,6 +14,7 @@ var rootCmd = &cobra.Command{
 	Use:   "muramasa",
 	Short: "Welcome to the beginning of nothingness.",
 	Run: func(cmd *cobra.Command, args []string) {
+		run()
 		fmt.Println("Welcome to the beginning of nothingness.")
 	},
 }

@@ -20,6 +20,6 @@ type IStockRepository interface {
 	GetProductStockByProductId(int) ([]*Stock, error)
 	AddStock(*Stock) (int, error)
 	GetProductTotalStock(int) (int, error)
-	GetLatestProductStock(int) (int, error)
+	GetLatestProductStock(int) (*Stock, error)
 	UpdateProductStock(int, int) error
 }
