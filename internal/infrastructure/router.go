@@ -37,23 +37,19 @@ func (rh RouterHandler) SetRoutes(r *gin.Engine) {
 }
 
 func (rh RouterHandler) productAPI(api *gin.RouterGroup) {
-	getProductController := productController.NewGetAllProductsController(rh.Repositories.productRepository)
-	addProductController := productController.NewAddProductController(rh.Repositories.productRepository)
 	product := api.Group("/product")
-	product.GET("/", getProductController.GetAllProducts)
-	product.POST("/", addProductController.AddProduct)
+
+	product.GET("/", productController.NewGetAllProductsController(rh.Repositories.productRepository).GetAllProducts)
+	product.POST("/", productController.NewAddProductController(rh.Repositories.productRepository).AddProduct)
 }
 
 func (rh RouterHandler) stockAPI(api *gin.RouterGroup) {
-	getProductStockByProductIDController := stockController.NewGetProductStockByProductIdController(rh.DB)
+	stock := api.Group("/stock")
 
-	addStockController := stockController.NewAddStockController(
+	stock.POST("/", stockController.NewAddStockController(
 		rh.Repositories.productRepository,
 		rh.Repositories.inboundRepository,
 		rh.Repositories.stockRepository,
-	)
-	stock := api.Group("/stock")
-
-	stock.POST("/", addStockController.AddStock)
-	stock.GET("/:id", getProductStockByProductIDController.GetProductStockByProductId)
+	).AddStock)
+	stock.GET("/:id", stockController.NewGetProductStockByProductIdController(rh.Repositories.stockRepository).GetProductStockByProductId)
 }

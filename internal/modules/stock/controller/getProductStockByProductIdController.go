@@ -1,9 +1,8 @@
 package controller
 
 import (
-	"database/sql"
 	"fmt"
-	"muramasa/internal/modules/stock/repository"
+	"muramasa/internal/modules/stock/entity"
 	"muramasa/internal/modules/stock/usecase"
 	"net/http"
 	"strconv"
@@ -12,16 +11,15 @@ import (
 )
 
 type GetProductStockByProductIdController struct {
-	db *sql.DB
+	stockRepository entity.IStockRepository
 }
 
-func NewGetProductStockByProductIdController(db *sql.DB) *GetProductStockByProductIdController {
-	return &GetProductStockByProductIdController{db: db}
+func NewGetProductStockByProductIdController(stockRepository entity.IStockRepository) *GetProductStockByProductIdController {
+	return &GetProductStockByProductIdController{stockRepository: stockRepository}
 }
 
 func (g *GetProductStockByProductIdController) GetProductStockByProductId(c *gin.Context) {
-	stockRepository := repository.NewStockRepository(g.db)
-	getProductStockByProductIdUseCase := usecase.NewGetProductStockByProductIdUseCase(stockRepository)
+	getProductStockByProductIdUseCase := usecase.NewGetProductStockByProductIdUseCase(g.stockRepository)
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
