@@ -18,10 +18,11 @@ type RouterHandler struct {
 }
 
 func NewRouterWithLogger(logger core.ILogger, db *sql.DB) RouterHandler {
+	repositories := initRepositories(db)
 	return RouterHandler{
 		Logger:       logger,
 		DB:           db,
-		Repositories: initRepositories(db),
+		Repositories: repositories,
 	}
 }
 
@@ -39,17 +40,17 @@ func (rh RouterHandler) SetRoutes(r *gin.Engine) {
 func (rh RouterHandler) productAPI(api *gin.RouterGroup) {
 	product := api.Group("/product")
 
-	product.GET("/", productController.NewGetAllProductsController(rh.Repositories.productRepository).GetAllProducts)
-	product.POST("/", productController.NewAddProductController(rh.Repositories.productRepository).AddProduct)
+	productController := productController.NewProductController(rh.Repositories.productRepository)
+
+	product.GET("/", productController.GetAllProducts)
+	product.POST("/", productController.AddProduct)
 }
 
 func (rh RouterHandler) stockAPI(api *gin.RouterGroup) {
 	stock := api.Group("/stock")
 
-	stock.POST("/", stockController.NewAddStockController(
-		rh.Repositories.productRepository,
-		rh.Repositories.inboundRepository,
-		rh.Repositories.stockRepository,
-	).AddStock)
-	stock.GET("/:id", stockController.NewGetProductStockByProductIdController(rh.Repositories.stockRepository).GetProductStockByProductId)
+	stockController := stockController.NewStockController(rh.Repositories.productRepository, rh.Repositories.inboundRepository, rh.Repositories.stockRepository)
+
+	stock.POST("/", stockController.AddStock)
+	stock.GET("/:id", stockController.GetProductStockByProductId)
 }

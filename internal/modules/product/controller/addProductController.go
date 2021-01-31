@@ -8,15 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type AddProductController struct {
-	productRepository entity.IProductRepository
-}
-
-func NewAddProductController(productRepository entity.IProductRepository) *AddProductController {
-	return &AddProductController{productRepository: productRepository}
-}
-
-func (g *AddProductController) AddProduct(c *gin.Context) {
+func (g *ProductController) AddProduct(c *gin.Context) {
 	addProductUseCase := usecase.NewAddProductUseCase(g.productRepository)
 	product := &entity.Product{}
 

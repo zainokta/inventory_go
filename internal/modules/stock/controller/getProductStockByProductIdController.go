@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"muramasa/internal/modules/stock/entity"
 	"muramasa/internal/modules/stock/usecase"
 	"net/http"
 	"strconv"
@@ -10,16 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type GetProductStockByProductIdController struct {
-	stockRepository entity.IStockRepository
-}
-
-func NewGetProductStockByProductIdController(stockRepository entity.IStockRepository) *GetProductStockByProductIdController {
-	return &GetProductStockByProductIdController{stockRepository: stockRepository}
-}
-
-func (g *GetProductStockByProductIdController) GetProductStockByProductId(c *gin.Context) {
-	getProductStockByProductIdUseCase := usecase.NewGetProductStockByProductIdUseCase(g.stockRepository)
+func (s *StockController) GetProductStockByProductId(c *gin.Context) {
+	getProductStockByProductIdUseCase := usecase.NewGetProductStockByProductIdUseCase(s.stockRepository)
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

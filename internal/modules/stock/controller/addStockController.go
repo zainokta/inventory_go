@@ -4,7 +4,6 @@ import (
 	"fmt"
 	inboundEntity "muramasa/internal/modules/inbound/entity"
 	inboundUsecase "muramasa/internal/modules/inbound/usecase"
-	productEntity "muramasa/internal/modules/product/entity"
 	productUseCase "muramasa/internal/modules/product/usecase"
 	stockEntity "muramasa/internal/modules/stock/entity"
 	stockUsecase "muramasa/internal/modules/stock/usecase"
@@ -18,29 +17,10 @@ type stockRequest struct {
 	*inboundEntity.Inbound
 }
 
-type AddStockController struct {
-	productRepository productEntity.IProductRepository
-	inboundRepository inboundEntity.IInboundRepository
-	stockRepository   stockEntity.IStockRepository
-}
-
-func NewAddStockController(
-	productRepository productEntity.IProductRepository,
-	inboundRepository inboundEntity.IInboundRepository,
-	stockRepository stockEntity.IStockRepository,
-) *AddStockController {
-	return &AddStockController{
-		productRepository: productRepository,
-		inboundRepository: inboundRepository,
-		stockRepository:   stockRepository,
-	}
-}
-
-func (a *AddStockController) AddStock(c *gin.Context) {
-
-	productUseCase := productUseCase.NewFindProductByIdUseCase(a.productRepository)
-	addInboundUseCase := inboundUsecase.NewAddInboundUseCase(a.inboundRepository)
-	addStockUseCase := stockUsecase.NewAddStockUseCase(a.stockRepository)
+func (s *StockController) AddStock(c *gin.Context) {
+	productUseCase := productUseCase.NewFindProductByIdUseCase(s.productRepository)
+	addInboundUseCase := inboundUsecase.NewAddInboundUseCase(s.inboundRepository)
+	addStockUseCase := stockUsecase.NewAddStockUseCase(s.stockRepository)
 
 	request := &stockRequest{}
 
