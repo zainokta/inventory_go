@@ -80,3 +80,67 @@ func (s *StockRepository) AddStock(stock *entity.Stock) (int, error) {
 
 	return int(id), nil
 }
+
+func (s *StockRepository) GetProductTotalStock(productID int) (int, error) {
+	rows, err := s.db.Query("SELECT SUM(stock) as stock FROM `stocks` WHERE product_id = ?", productID)
+	if err != nil {
+		return 0, err
+	}
+
+	defer rows.Close()
+
+	var totalStock int
+	hasResult := false
+	for rows.Next() {
+		hasResult = true
+		err = rows.Scan(&totalStock)
+		if err != nil {
+			return 0, nil
+		}
+	}
+
+	if !hasResult {
+		return 0, nil
+	}
+
+	return totalStock, nil
+}
+
+func (s *StockRepository) GetLatestProductStock(productID int) (int, error) {
+	rows, err := s.db.Query(`SELECT stocks.* FROM stocks
+							JOIN inbounds ON inbounds.id = stocks.inbound_id
+							ORDER BY COALESCE(stocks.expiry_date, inbounds.inbound_date)
+							LIMIT 1 = ?`, productID)
+	if err != nil {
+		return 0, err
+	}
+
+	defer rows.Close()
+
+	var stock int
+	hasResult := false
+	for rows.Next() {
+		hasResult = true
+		err = rows.Scan(&stock)
+	}
+
+	if !hasResult {
+		return 0, nil
+	}
+
+	return stock, nil
+}
+
+func (s *StockRepository) UpdateProductStock(stockID int, currentStock int) error {
+	stmt, err := s.db.Prepare("UPDATE stocks SET stock=? WHERE id=?")
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(stockID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

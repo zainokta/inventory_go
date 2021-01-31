@@ -35,6 +35,7 @@ func (rh RouterHandler) SetRoutes(r *gin.Engine) {
 
 	rh.productAPI(api)
 	rh.stockAPI(api)
+	rh.orderAPI(api)
 }
 
 func (rh RouterHandler) productAPI(api *gin.RouterGroup) {
@@ -53,4 +54,12 @@ func (rh RouterHandler) stockAPI(api *gin.RouterGroup) {
 
 	stock.POST("/", stockController.AddStock)
 	stock.GET("/:id", stockController.GetProductStockByProductId)
+}
+
+func (rh RouterHandler) orderAPI(api *gin.RouterGroup) {
+	order := api.Group("/order")
+
+	order.POST("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, "order")
+	})
 }
