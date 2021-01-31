@@ -1,9 +1,7 @@
 package controller
 
 import (
-	"database/sql"
 	"muramasa/internal/modules/product/entity"
-	"muramasa/internal/modules/product/repository"
 	"muramasa/internal/modules/product/usecase"
 	"net/http"
 
@@ -11,16 +9,15 @@ import (
 )
 
 type AddProductController struct {
-	DB *sql.DB
+	productRepository entity.IProductRepository
 }
 
-func NewAddProductController(db *sql.DB) *AddProductController {
-	return &AddProductController{DB: db}
+func NewAddProductController(productRepository entity.IProductRepository) *AddProductController {
+	return &AddProductController{productRepository: productRepository}
 }
 
 func (g *AddProductController) AddProduct(c *gin.Context) {
-	productRepository := repository.NewProductRepository(g.DB)
-	addProductUseCase := usecase.NewAddProductUseCase(productRepository)
+	addProductUseCase := usecase.NewAddProductUseCase(g.productRepository)
 	product := &entity.Product{}
 
 	err := c.Bind(product)

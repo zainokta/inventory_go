@@ -5,20 +5,23 @@ import (
 	"muramasa/internal/core"
 	productController "muramasa/internal/modules/product/controller"
 	stockController "muramasa/internal/modules/stock/controller"
+
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type RouterHandler struct {
-	Logger core.ILogger
-	DB     *sql.DB
+	Logger       core.ILogger
+	DB           *sql.DB
+	Repositories *Repositories
 }
 
 func NewRouterWithLogger(logger core.ILogger, db *sql.DB) RouterHandler {
 	return RouterHandler{
-		Logger: logger,
-		DB:     db,
+		Logger:       logger,
+		DB:           db,
+		Repositories: initRepositories(db),
 	}
 }
 
@@ -34,8 +37,8 @@ func (rh RouterHandler) SetRoutes(r *gin.Engine) {
 }
 
 func (rh RouterHandler) productAPI(api *gin.RouterGroup) {
-	getProductController := productController.NewGetAllProductsController(rh.DB)
-	addProductController := productController.NewAddProductController(rh.DB)
+	getProductController := productController.NewGetAllProductsController(rh.Repositories.productRepository)
+	addProductController := productController.NewAddProductController(rh.Repositories.productRepository)
 	product := api.Group("/product")
 	product.GET("/", getProductController.GetAllProducts)
 	product.POST("/", addProductController.AddProduct)
@@ -43,7 +46,12 @@ func (rh RouterHandler) productAPI(api *gin.RouterGroup) {
 
 func (rh RouterHandler) stockAPI(api *gin.RouterGroup) {
 	getProductStockByProductIDController := stockController.NewGetProductStockByProductIdController(rh.DB)
-	addStockController := stockController.NewAddStockController(rh.DB)
+
+	addStockController := stockController.NewAddStockController(
+		rh.Repositories.productRepository,
+		rh.Repositories.inboundRepository,
+		rh.Repositories.stockRepository,
+	)
 	stock := api.Group("/stock")
 
 	stock.POST("/", addStockController.AddStock)

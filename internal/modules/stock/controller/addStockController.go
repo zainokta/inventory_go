@@ -1,15 +1,12 @@
 package controller
 
 import (
-	"database/sql"
 	"fmt"
 	inboundEntity "muramasa/internal/modules/inbound/entity"
-	inbound "muramasa/internal/modules/inbound/repository"
 	inboundUsecase "muramasa/internal/modules/inbound/usecase"
-	product "muramasa/internal/modules/product/repository"
+	productEntity "muramasa/internal/modules/product/entity"
 	productUseCase "muramasa/internal/modules/product/usecase"
 	stockEntity "muramasa/internal/modules/stock/entity"
-	stock "muramasa/internal/modules/stock/repository"
 	stockUsecase "muramasa/internal/modules/stock/usecase"
 	"net/http"
 
@@ -22,21 +19,28 @@ type stockRequest struct {
 }
 
 type AddStockController struct {
-	db *sql.DB
+	productRepository productEntity.IProductRepository
+	inboundRepository inboundEntity.IInboundRepository
+	stockRepository   stockEntity.IStockRepository
 }
 
-func NewAddStockController(db *sql.DB) *AddStockController {
-	return &AddStockController{db: db}
+func NewAddStockController(
+	productRepository productEntity.IProductRepository,
+	inboundRepository inboundEntity.IInboundRepository,
+	stockRepository stockEntity.IStockRepository,
+) *AddStockController {
+	return &AddStockController{
+		productRepository: productRepository,
+		inboundRepository: inboundRepository,
+		stockRepository:   stockRepository,
+	}
 }
 
 func (a *AddStockController) AddStock(c *gin.Context) {
-	productRepository := product.NewProductRepository(a.db)
-	inboundRepository := inbound.NewInboundRepository(a.db)
-	stockRepository := stock.NewStockRepository(a.db)
 
-	productUseCase := productUseCase.NewFindProductByIdUseCase(productRepository)
-	addInboundUseCase := inboundUsecase.NewAddInboundUseCase(inboundRepository)
-	addStockUseCase := stockUsecase.NewAddStockUseCase(stockRepository)
+	productUseCase := productUseCase.NewFindProductByIdUseCase(a.productRepository)
+	addInboundUseCase := inboundUsecase.NewAddInboundUseCase(a.inboundRepository)
+	addStockUseCase := stockUsecase.NewAddStockUseCase(a.stockRepository)
 
 	request := &stockRequest{}
 

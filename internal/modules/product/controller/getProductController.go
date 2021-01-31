@@ -1,8 +1,7 @@
 package controller
 
 import (
-	"database/sql"
-	"muramasa/internal/modules/product/repository"
+	"muramasa/internal/modules/product/entity"
 	"muramasa/internal/modules/product/usecase"
 	"net/http"
 
@@ -10,16 +9,15 @@ import (
 )
 
 type GetAllProductsController struct {
-	DB *sql.DB
+	productRepository entity.IProductRepository
 }
 
-func NewGetAllProductsController(db *sql.DB) *GetAllProductsController {
-	return &GetAllProductsController{DB: db}
+func NewGetAllProductsController(productRepository entity.IProductRepository) *GetAllProductsController {
+	return &GetAllProductsController{productRepository: productRepository}
 }
 
 func (g *GetAllProductsController) GetAllProducts(c *gin.Context) {
-	productRepository := repository.NewProductRepository(g.DB)
-	getAllProductUseCase := usecase.NewGetAllProductsUseCase(productRepository)
+	getAllProductUseCase := usecase.NewGetAllProductsUseCase(g.productRepository)
 	products, err := getAllProductUseCase.Execute()
 
 	if err != nil {
