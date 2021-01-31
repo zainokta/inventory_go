@@ -17,13 +17,13 @@ var startServerCmd = &cobra.Command{
 
 func run() {
 	ginServer := infrastructure.NewServer(
-		viper.GetInt("server.port"),
-		infrastructure.DebugMode,
+		viper.GetInt("APP_PORT"),
+		viper.GetString("APP_DEBUG"),
 	)
 
 	routerLogger := infrastructure.NewLogger("development",
-		viper.GetString("log.level"),
-		viper.GetString("log.format"),
+		viper.GetString("LOG_LEVEL"),
+		viper.GetString("LOG_FORMAT"),
 	)
 
 	db := infrastructure.NewDatabaseConnection()

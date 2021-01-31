@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"log"
-	"muramasa/config"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -27,9 +26,6 @@ func init() {
 	if err := viper.ReadInConfig(); err != nil {
 		log.Println("Configuration file not found.")
 	}
-
-	config.ServerConfig(rootCmd)
-	config.LoggerConfig(rootCmd)
 }
 
 func Execute() {

@@ -12,26 +12,20 @@ import (
 
 type GinServerMode int
 
-const (
-	DebugMode GinServerMode = iota
-	ReleaseMode
-	TestMode
-)
-
 type GinServer struct {
 	port   int
 	Router *gin.Engine
 }
 
-func NewServer(port int, mode GinServerMode) GinServer {
+func NewServer(port int, mode string) GinServer {
 	s := GinServer{}
 	s.port = port
 	s.Router = gin.New()
 
 	switch mode {
-	case DebugMode:
+	case "DEBUG":
 		gin.SetMode(gin.DebugMode)
-	case TestMode:
+	case "TEST":
 		gin.SetMode(gin.TestMode)
 	default:
 		gin.SetMode(gin.ReleaseMode)
